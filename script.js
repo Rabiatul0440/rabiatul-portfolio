@@ -239,34 +239,57 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => sparkle.remove(), 1000);
   });
 
-  /* ============ CONTACT FORM ============ */
+  /* ============ CONTACT FORM — UPDATED FOR FORMSPREE ============ */
   const contactForm = document.getElementById('contactForm');
   const formStatus = document.getElementById('formStatus');
 
   if (contactForm) {
     contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      
+      // Set _replyto hidden field to user's email
+      const emailInput = contactForm.querySelector('input[name="email"]');
+      const replyToInput = contactForm.querySelector('input[name="_replyto"]');
+      if (emailInput && replyToInput) {
+        replyToInput.value = emailInput.value;
+      }
+
       formStatus.textContent = '💌 Sending...';
       formStatus.style.color = '#ff1493';
 
       const formData = new FormData(contactForm);
+      const submitBtn = contactForm.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
+
       try {
         const response = await fetch(contactForm.action, {
           method: 'POST',
           body: formData,
-          headers: { 'Accept': 'application/json' }
+          headers: { 
+            'Accept': 'application/json'
+          }
         });
+
         if (response.ok) {
           formStatus.textContent = '💖 Message sent! I will get back to you soon.';
           formStatus.style.color = '#10b981';
           contactForm.reset();
         } else {
-          formStatus.textContent = '❌ Oops! Something went wrong. Try email instead.';
+          // Try to get error details from Formspree
+          const data = await response.json().catch(() => ({}));
+          const errorMsg = data.errors 
+            ? data.errors.map(err => err.message).join(', ') 
+            : 'Something went wrong';
+          formStatus.textContent = `❌ ${errorMsg}. Try email instead.`;
           formStatus.style.color = '#ef4444';
+          console.error('Formspree error:', data);
         }
       } catch (err) {
-        formStatus.textContent = '❌ Network error. Please email me directly.';
+        console.error('Network error:', err);
+        formStatus.textContent = '❌ Network error. Please email me directly at rubyzawawi26@gmail.com';
         formStatus.style.color = '#ef4444';
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
       }
     });
   }
