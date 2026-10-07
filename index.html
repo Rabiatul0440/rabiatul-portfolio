@@ -486,8 +486,13 @@
             </a>
           </div>
 
-          <!-- CONTACT FORM -->
-          <form class="contact-form" id="contactForm" action="https://formspree.io/f/xgaooydb" method="POST">
+          <!-- CONTACT FORM — UPDATED WITH method="POST" -->
+          <form 
+            class="contact-form" 
+            id="contactForm" 
+            action="https://formspree.io/f/xgaooydb" 
+            method="POST"
+          >
             <div class="form-group">
               <label for="name">Your Name</label>
               <input type="text" id="name" name="name" placeholder="Jane Doe" required>
@@ -500,6 +505,10 @@
               <label for="message">Message</label>
               <textarea id="message" name="message" rows="4" placeholder="Hi Rabiatul, I'd like to discuss..." required></textarea>
             </div>
+            <!-- Hidden field for reply-to -->
+            <input type="hidden" name="_replyto" value="">
+            <!-- Subject line -->
+            <input type="hidden" name="_subject" value="New message from portfolio">
             <button type="submit" class="btn btn-primary submit-btn">
               <i class="fas fa-paper-plane"></i> Send Message
             </button>
